@@ -1,8 +1,11 @@
 use revision::revisioned;
+#[cfg(feature = "policy")]
 use std::collections::{HashMap, HashSet};
 use std::ops::Deref;
+#[cfg(feature = "policy")]
 use std::str::FromStr;
 
+#[cfg(feature = "policy")]
 use cedar_policy::{Entity, EntityId, EntityTypeName, EntityUid, RestrictedExpression};
 use serde::{Deserialize, Serialize};
 
@@ -62,6 +65,7 @@ impl Actor {
 	}
 
 	// Cedar policy helpers
+	#[cfg(feature = "policy")]
 	pub fn cedar_attrs(&self) -> HashMap<String, RestrictedExpression> {
 		[
 			("type", self.kind().into()),
@@ -73,12 +77,14 @@ impl Actor {
 		.collect()
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_parents(&self) -> HashSet<EntityUid> {
 		let mut parents = HashSet::with_capacity(1);
 		parents.insert(self.res.level().into());
 		parents
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_entities(&self) -> Vec<Entity> {
 		let mut entities = Vec::new();
 
@@ -103,6 +109,7 @@ impl Deref for Actor {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Actor> for EntityUid {
 	fn from(actor: &Actor) -> Self {
 		EntityUid::from_type_name_and_id(
@@ -112,6 +119,7 @@ impl std::convert::From<&Actor> for EntityUid {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Actor> for Entity {
 	fn from(actor: &Actor) -> Self {
 		Entity::new(actor.into(), actor.cedar_attrs(), actor.cedar_parents())

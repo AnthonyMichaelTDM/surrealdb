@@ -1,5 +1,6 @@
 use crate::iam::Error;
 use crate::sql::Ident;
+#[cfg(feature = "policy")]
 use cedar_policy::{Entity, EntityTypeName, EntityUid, RestrictedExpression};
 use revision::revisioned;
 use serde::{Deserialize, Serialize};
@@ -51,6 +52,7 @@ impl std::convert::From<Role> for Ident {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Role> for EntityUid {
 	fn from(role: &Role) -> Self {
 		EntityUid::from_type_name_and_id(
@@ -60,12 +62,14 @@ impl std::convert::From<&Role> for EntityUid {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Role> for Entity {
 	fn from(role: &Role) -> Self {
 		Entity::new(role.into(), Default::default(), Default::default())
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Role> for RestrictedExpression {
 	fn from(role: &Role) -> Self {
 		format!("{}", EntityUid::from(role)).parse().unwrap()

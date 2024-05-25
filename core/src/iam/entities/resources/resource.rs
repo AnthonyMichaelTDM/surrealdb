@@ -1,4 +1,5 @@
 use revision::revisioned;
+#[cfg(feature = "policy")]
 use std::{
 	collections::{HashMap, HashSet},
 	str::FromStr,
@@ -6,6 +7,7 @@ use std::{
 
 use super::Level;
 
+#[cfg(feature = "policy")]
 use cedar_policy::{Entity, EntityId, EntityTypeName, EntityUid, RestrictedExpression};
 use serde::{Deserialize, Serialize};
 
@@ -110,6 +112,7 @@ impl Resource {
 	}
 
 	// Cedar policy helpers
+	#[cfg(feature = "policy")]
 	pub fn cedar_attrs(&self) -> HashMap<String, RestrictedExpression> {
 		[("type", self.kind().into()), ("level", self.level().into())]
 			.into_iter()
@@ -117,10 +120,12 @@ impl Resource {
 			.collect()
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_parents(&self) -> HashSet<EntityUid> {
 		HashSet::from([self.level().into()])
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_entities(&self) -> Vec<Entity> {
 		let mut entities = Vec::new();
 
@@ -131,6 +136,7 @@ impl Resource {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Resource> for EntityUid {
 	fn from(res: &Resource) -> Self {
 		EntityUid::from_type_name_and_id(
@@ -140,18 +146,21 @@ impl std::convert::From<&Resource> for EntityUid {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Resource> for Entity {
 	fn from(res: &Resource) -> Self {
 		Entity::new(res.into(), res.cedar_attrs(), res.cedar_parents())
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Resource> for RestrictedExpression {
 	fn from(res: &Resource) -> Self {
 		format!("{}", EntityUid::from(res)).parse().unwrap()
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&ResourceKind> for RestrictedExpression {
 	fn from(kind: &ResourceKind) -> Self {
 		RestrictedExpression::new_string(kind.to_string())

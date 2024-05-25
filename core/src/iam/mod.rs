@@ -1,3 +1,4 @@
+#[cfg(feature = "policy")]
 use cedar_policy::Context;
 pub use entities::Level;
 use thiserror::Error;
@@ -10,6 +11,7 @@ pub mod entities;
 pub mod issue;
 #[cfg(feature = "jwks")]
 pub mod jwks;
+#[cfg(feature = "policy")]
 pub mod policies;
 pub mod signin;
 pub mod signup;
@@ -39,6 +41,17 @@ impl From<Error> for String {
 	}
 }
 
+#[cfg(not(feature = "policy"))]
+/// Dummy function that always returns Ok(()).
+///
+/// The only technical change in API is that the `ctx` parameter is now an `Option<()>` instead of `Option<Context>`,
+/// as the `Context` type is not available when the `policy` feature is disabled.
+/// Surely this won't have far reaching consequences ...
+pub fn is_allowed(_: &Actor, _: &Action, _: &Resource, _: Option<()>) -> Result<(), Error> {
+	Ok(())
+}
+
+#[cfg(feature = "policy")]
 pub fn is_allowed(
 	actor: &Actor,
 	action: &Action,

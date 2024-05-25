@@ -1,9 +1,11 @@
 use revision::revisioned;
+#[cfg(feature = "policy")]
 use std::{
 	collections::{HashMap, HashSet},
 	str::FromStr,
 };
 
+#[cfg(feature = "policy")]
 use cedar_policy::{Entity, EntityTypeName, EntityUid, RestrictedExpression};
 use serde::{Deserialize, Serialize};
 
@@ -67,6 +69,7 @@ impl Level {
 		}
 	}
 
+	#[cfg(feature = "policy")]
 	fn parent(&self) -> Option<Level> {
 		match self {
 			Level::No => None,
@@ -78,6 +81,7 @@ impl Level {
 	}
 
 	// Cedar policy helpers
+	#[cfg(feature = "policy")]
 	pub fn cedar_attrs(&self) -> HashMap<String, RestrictedExpression> {
 		let mut attrs = HashMap::with_capacity(5);
 		attrs.insert("type".into(), RestrictedExpression::new_string(self.level_name().to_owned()));
@@ -97,6 +101,7 @@ impl Level {
 		attrs
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_parents(&self) -> HashSet<EntityUid> {
 		if let Some(parent) = self.parent() {
 			return HashSet::from([parent.into()]);
@@ -104,6 +109,7 @@ impl Level {
 		HashSet::with_capacity(0)
 	}
 
+	#[cfg(feature = "policy")]
 	pub fn cedar_entities(&self) -> Vec<Entity> {
 		let mut entities = Vec::new();
 
@@ -156,6 +162,7 @@ impl From<(Option<&str>, Option<&str>, Option<&str>)> for Level {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<Level> for EntityUid {
 	fn from(level: Level) -> Self {
 		EntityUid::from_type_name_and_id(
@@ -165,30 +172,35 @@ impl std::convert::From<Level> for EntityUid {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Level> for EntityUid {
 	fn from(level: &Level) -> Self {
 		level.to_owned().into()
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<Level> for Entity {
 	fn from(level: Level) -> Self {
 		Entity::new(level.to_owned().into(), level.cedar_attrs(), level.cedar_parents())
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Level> for Entity {
 	fn from(level: &Level) -> Self {
 		level.to_owned().into()
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<Level> for RestrictedExpression {
 	fn from(level: Level) -> Self {
 		format!("{}", EntityUid::from(level)).parse().unwrap()
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Level> for RestrictedExpression {
 	fn from(level: &Level) -> Self {
 		level.to_owned().into()

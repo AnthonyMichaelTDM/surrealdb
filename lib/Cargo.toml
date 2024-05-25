@@ -54,6 +54,7 @@ rustls = [
 ]
 ml = ["surrealdb-core/ml"]
 jwks = ["surrealdb-core/jwks"]
+policy = ["surrealdb-core/policy"]
 arbitrary = ["surrealdb-core/arbitrary"]
 
 # Private features

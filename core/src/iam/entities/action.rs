@@ -1,5 +1,7 @@
+#[cfg(feature = "policy")]
 use std::str::FromStr;
 
+#[cfg(feature = "policy")]
 use cedar_policy::{Entity, EntityId, EntityTypeName, EntityUid};
 
 use crate::dbs::Statement;
@@ -27,6 +29,7 @@ impl Action {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Action> for EntityUid {
 	fn from(action: &Action) -> Self {
 		EntityUid::from_type_name_and_id(
@@ -36,6 +39,7 @@ impl std::convert::From<&Action> for EntityUid {
 	}
 }
 
+#[cfg(feature = "policy")]
 impl std::convert::From<&Action> for Entity {
 	fn from(action: &Action) -> Self {
 		Entity::new(action.into(), Default::default(), Default::default())
